@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-
+const { postRegister } = require('../controllers/index');
 /* GET home page. */
 router.get('/', (req, res, next) => {
   res.render('index', { title: 'Surf Shop - Home' });
@@ -8,14 +8,12 @@ router.get('/', (req, res, next) => {
 
 /* GET /register. */
 router.get('/register', (req, res, next) => {
-  res.send("Get /register");
+  res.send("get /register");
 });
-
 /* POST /register. */
 //this is for creating the user.
-router.post('/register', (req, res, next) => {
-  res.send("POST /register");
-});
+
+router.post('/register', postRegister);
 
 /* get /login. */
 router.get('/login', (req, res, next) => {
@@ -49,11 +47,11 @@ router.put('/forgot', (req, res, next) => {
   res.send("PUT /forgot");
 });
 
-/* GET /reset */
+/* GET /reset/:token */
 router.get('/reset/:token', (req, res, next) => {
   res.send("GET /reset/:token");
 });
-/* PUT /reset */
+/* PUT /reset/:token */
 router.put('/reset/:token', (req, res, next) => {
   res.send("PUt /reset/:token");
 });
