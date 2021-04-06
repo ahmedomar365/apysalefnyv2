@@ -1,7 +1,6 @@
 const express = require('express');
-const passport = require('passport');
 const router = express.Router();
-const { postRegister } = require('../controllers');
+const { postRegister, postLogin, getLogout } = require('../controllers');
 
 const { errorHandler } = require('../middleware');
 
@@ -24,22 +23,15 @@ router.get('/login', (req, res, next) => {
   res.send("get /login");
 });
 
-/* POST /login. */
-router.post('/login', passport.authenticate('local'), (req, res, next) => {
-  res.send("post /login");
-});
-// router.post('/login', passport.authenticate('local', {
-//   successRedirect: '/', 
-//   failureRedirect: '/login'
-// }));
+// /* POST /login. */
+// router.post('/login', passport.authenticate('local'), (req, res, next) => {
+//   res.send("post /login");
+// });
+router.post('/login', errorHandler(postLogin));
 /* GET /profile */
 
 /* get /logout. */
-router.get('/logout', (req, res, next) => {
-  req.logout();
-  res.redirect('/');
-
-});
+router.get('/logout', getLogout);
 
 router.get('/profile', (req, res, next) => {
   res.send("GET /profile");
