@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { postRegister, postLogin, getLogout } = require('../controllers');
 
-const { errorHandler } = require('../middleware');
+const { asyncErrorHandler } = require('../middleware');
 
 /* GET home page. */
 router.get('/', (req, res, next) => {
@@ -16,7 +16,7 @@ router.get('/register', (req, res, next) => {
 /* POST /register. */
 //this is for creating the user.
 
-router.post('/register', errorHandler(postRegister));
+router.post('/register', asyncErrorHandler(postRegister));
 
 /* get /login. */
 router.get('/login', (req, res, next) => {
@@ -27,7 +27,7 @@ router.get('/login', (req, res, next) => {
 // router.post('/login', passport.authenticate('local'), (req, res, next) => {
 //   res.send("post /login");
 // });
-router.post('/login', errorHandler(postLogin));
+router.post('/login', asyncErrorHandler(postLogin));
 /* GET /profile */
 
 /* get /logout. */

@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
@@ -8,6 +10,7 @@ const User = require('./models/user');
 const session = require('express-session');
 const logger = require('morgan');
 const mongoose = require('mongoose');
+const methodOverride = require('method-override');
 // const MongoClient = require('mongodb').MongoClient;
 const uri = "mongodb+srv://surf:surf@cluster0.hufxf.mongodb.net/surf-shop?retryWrites=true&w=majority";
 // const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -15,7 +18,6 @@ const uri = "mongodb+srv://surf:surf@cluster0.hufxf.mongodb.net/surf-shop?retryW
 const indexRouter = require('./routes/index');
 const postsRouter = require('./routes/posts');
 const reviewsRouter = require('./routes/reviews');
-
 const app = express();
 
 //connect to the database
@@ -40,9 +42,10 @@ app.use(logger('dev'));
 // app.use(bodyParser.json());
 // app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(methodOverride('_method'));
 
 
 //configure Passport and Sessions

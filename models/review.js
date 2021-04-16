@@ -1,12 +1,12 @@
-const mongose = require('mongoose');
-const Shema = mongose.Schema;
+const mongoose = require('mongoose');
+const Schema = mongose.Schema;
 
-const ReviewShema = new Shema({
+const ReviewShema = new Schema({
     body: String,
     author: {
-        type: Shema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: 'User'
     },
 });
 
-module.exports = moongose.model('Review', ReviewShema);
+module.exports = mongoose.model('Review', ReviewShema);

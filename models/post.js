@@ -1,16 +1,16 @@
-const mongose = require('mongoose');
-const Shema = mongose.Schema;
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const PostShema = new Shema({
+const PostShema = new Schema({
     title: String,
     price: String,//Post profile image
     description: String,
-    images: [Stirng],
-    location: Stirng,
+    images: [ { url: String, public_id: String } ],
+    location: String,
     lat: Number,
     lng: Number,
     author: {
-        type: Shema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: 'User'
     },
 
@@ -23,4 +23,4 @@ const PostShema = new Shema({
 
 });
 
-module.exports = moongose.model('Post', PostShema);
+module.exports = mongoose.model('Post', PostShema);
