@@ -5,12 +5,7 @@ const Schema = mongoose.Schema;
 const UserShema = new Schema({
     email: String,
     image: String,//user profile image
-    posts: [
-        {
-            type: Schema.Types.ObjectId,
-            ref: 'Post'
-        }
-    ]
+
 
 });
 
