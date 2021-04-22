@@ -13,7 +13,7 @@ const logger = require('morgan');
 const mongoose = require('mongoose');
 const methodOverride = require('method-override');
 // const MongoClient = require('mongodb').MongoClient;
-const uri = "mongodb+srv://surf:surf@cluster0.hufxf.mongodb.net/surf-shop-mapbox?retryWrites=true&w=majority";
+const uri = "mongodb+srv://surf:surf@cluster0.hufxf.mongodb.net/surf-shop?retryWrites=true&w=majority";
 // const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 // require routes
 const indexRouter = require('./routes/index');
@@ -73,6 +73,11 @@ passport.deserializeUser(User.deserializeUser());
 app.use(function(req, res, next) {
   // set default page title
   res.locals.title = 'Surf Shop';
+  req.user = {
+    '_id': '60808f48ad36a92cac104d95',
+    'username': 'elsayed'
+  }
+  res.locals.currentUser = req.user;
   // set success flash message
   res.locals.success = req.session.success || '';
   delete req.session.success;

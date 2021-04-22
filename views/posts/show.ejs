@@ -36,7 +36,25 @@
 <h3>Reviews</h3>
 <% post.reviews.forEach(function(review) { %>
     <div>
-        <%= review.body %>
+        Author: <%= review.author.username %> <br>
+        <%= review.body %><br>
         Rating: <%= review.rating %> 
     </div>
+    <% if(review.author.equals(currentUser._id)) { %> 
+    <div>
+        <button class="toggle-edit-form">Edit</button>
+
+        <form action="/posts/<%= post.id %>/reviews/<%= review.id %>?_method=PUT" method="POST" class="edit-review-form">
+            <textarea name="review[body]" required><%= review.body %></textarea>
+            <input type="number" name="review[rating]" min="1" max="5" step="1" value="<%= review.rating %>" required>
+            <input type="submit" value="Update">
+        </form>
+
+        <form action="/posts/<%= post.id %>/reviews/<%= review.id %>?_method=DELETE" method="POST">
+            <input type="submit" value="Delete">
+        </form>
+    </div>
+    <% } %> 
+    <hr>
+
 <% }); %>
