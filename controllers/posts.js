@@ -19,6 +19,7 @@ module.exports = {
 
     //creating a new post
     postNew(req, res, next) {
+        
         res.render('posts/new');
     },
 
@@ -122,6 +123,7 @@ module.exports = {
             
         }
         await post.remove()
+        req.session.success = 'Post deleted successfully!';
         res.redirect('/posts');
     }
 }
