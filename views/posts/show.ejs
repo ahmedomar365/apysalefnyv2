@@ -4,6 +4,21 @@
 <div> Description: <%= post.description %> </div>
 <div> Location: <%= post.location %> </div>
 <div>
+<% for(let i = 0; i < 5; i++) { %>
+    <%   if(i < floorRating) { %>
+        <!-- display a full star -->
+        <i class="fas fa-star"></i>
+        <% } else if((post.avgRating - i) > 0 && (post.avgRating - i) < 1) { %>
+            <!-- dsplay a half star -->
+            <i class="fas fa-star-half-alt"></i>
+            <% } else { %>
+                <!-- display an empty star -->
+                <i class="far fa-star"></i>
+                <% } %>
+    <% } %>  
+    <%= `${post.avgRating} star${post.avgRating === 1 ? '' : 's'}` %> 
+</div>
+<div>
     <% post.images.forEach(function(image) { %> 
         <img src="<%= image.url %>" alt="image" width="200px">
     <% }); %> 
@@ -65,7 +80,7 @@
                 <button class="clear-rating" type="button">Clear Rating</button>
 
                 <input type="radio" id="edit-rate0" class="input-no-rate" name="review[rating]" value="0" checked aria-label="No rating." />
-                <input type="radio" idedit-="edit-rate1" name="review[rating]" value="1" />
+                <input type="radio" id="edit-rate1" name="review[rating]" value="1" />
                 <label for="edit-rate1" title="Terrible">1 star</label>
                 <input type="radio" id="edit-rate2" name="review[rating]" value="2" />
                 <label for="edit-rate2" title="Not good">2 stars</label>

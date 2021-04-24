@@ -75,8 +75,8 @@ app.use(function(req, res, next) {
   // set default page title
   res.locals.title = 'Surf Shop';
   req.user = {
-    '_id': '60808f48ad36a92cac104d95',
-    'username': 'elsayed'
+    '_id': '60838c171e900715648eb580',
+    'username': 'ian3'
   }
   res.locals.currentUser = req.user;
   // set success flash message
