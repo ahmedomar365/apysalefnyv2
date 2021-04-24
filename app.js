@@ -12,6 +12,8 @@ const session = require('express-session');
 const logger = require('morgan');
 const mongoose = require('mongoose');
 const methodOverride = require('method-override');
+// const seedPost = require('./seeds');
+// seedPost();
 // const MongoClient = require('mongodb').MongoClient;
 const uri = "mongodb+srv://surf:surf@cluster0.hufxf.mongodb.net/surf-shop?retryWrites=true&w=majority";
 // const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
