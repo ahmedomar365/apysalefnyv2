@@ -1,6 +1,9 @@
 <% layout('layouts/boilerplate') -%>
 
 <h1>Posts Index!</h1>
+
+<div id="map"></div>
+
 <% include ../partials/paginatePosts %> 
 <% posts.docs.forEach(function(post) { %>
     <div>
@@ -14,3 +17,11 @@
 <% }); %> 
 
 <% include ../partials/paginatePosts %> 
+
+
+<script>
+    mapboxgl.accessToken = "<%= mapBoxToken %>";
+    var posts = { features:<%- JSON.stringify(posts.docs) %> };
+</script>
+
+<script src="/javascripts/allPostsClusterMap.js"></script>

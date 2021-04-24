@@ -18,7 +18,7 @@ module.exports = {
             limit: 10
         });
         posts.page = Number(posts.page);
-        res.render('posts/index', { posts, title: 'Posts Index' });
+        res.render('posts/index', { posts, mapBoxToken: process.env.MAPBOX_TOKEN ,title: 'Posts Index' });
     },
 
     //creating a new post
