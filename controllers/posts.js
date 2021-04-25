@@ -39,6 +39,7 @@ module.exports = {
           })
             .send();
         req.body.post.geometry = response.body.features[0].geometry;
+        req.body.post.author = req.user._id;
         //use req.body to create a new Post
         // let post = await Post.create(req.body.post)
         let post = new Post(req.body.post);
@@ -68,15 +69,15 @@ module.exports = {
     //Posts Edit    
 
     async postEdit(req, res, next) {
-        let post = await Post.findById(req.params.id);
-        res.render('posts/edit', { post });
+        
+        res.render('posts/edit');
 
     },
 
     // Posts Update
     async postUpdate(req, res, next) {
 
-        let post = await Post.findById(req.params.id);
+        const { post } = res.locals;
         if (req.body.deleteImages && req.body.deleteImages.length) {
             let deleteImages = req.body.deleteImages;
             for (const filename of deleteImages) {
@@ -122,7 +123,7 @@ module.exports = {
     },
     
     async postDestroy(req, res, next) {
-        let post = await Post.findById(req.params.id);
+        const { post } = res.locals;
         for (const image of post.images) {
             await cloudinary.uploader.destroy(image.filename);
             
