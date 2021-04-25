@@ -1,25 +1,29 @@
 const express = require('express');
 const router = express.Router();
-const { postRegister, postLogin, getLogout, landingPage } = require('../controllers');
+const { 
+  getRegister,
+  postRegister, 
+  getLogin,
+  postLogin, 
+  getLogout, 
+  landingPage,
 
-const { asyncErrorHandler } = require('../middleware');
+} = require('../controllers');
+
+const { asyncErrorHandler, CheckIfUserExists } = require('../middleware');
 
 /* GET home/landing page. */
 router.get('/', asyncErrorHandler(landingPage));
 
 /* GET /register. */
-router.get('/register', (req, res, next) => {
-  res.send("get /register");
-});
+router.get('/register', getRegister);
 /* POST /register. */
 //this is for creating the user.
 
-router.post('/register', asyncErrorHandler(postRegister));
+router.post('/register', asyncErrorHandler(CheckIfUserExists), asyncErrorHandler(postRegister));
 
 /* get /login. */
-router.get('/login', (req, res, next) => {
-  res.send("get /login");
-});
+router.get('/login', getLogin);
 
 // /* POST /login. */
 // router.post('/login', passport.authenticate('local'), (req, res, next) => {

@@ -1,14 +1,8 @@
 const Post = require('../models/post');
-const cloudinary = require('cloudinary');
 const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
 const mapBoxToken = process.env.MAPBOX_TOKEN;
 const geocodingClient = mbxGeocoding({ accessToken: mapBoxToken });
-
-cloudinary.config({
-    cloud_name: 'dpxkjv3fg',
-    api_key: '311534663183965',
-    api_secret: process.env.CLOUDINARY_SECRET
-});
+const { cloudinary } = require('../cloudinary');
 
 module.exports = {
 
@@ -33,10 +27,9 @@ module.exports = {
     async postCreate(req, res, next) {
         req.body.post.images = [];
         for(const file of req.files) {
-            let image = await cloudinary.v2.uploader.upload(file.path);
             req.body.post.images.push({
-                url: image.secure_url,
-                public_id: image.public_id
+                path: file.path,
+                filename: file.filename
             });
 
         }
@@ -86,10 +79,10 @@ module.exports = {
         let post = await Post.findById(req.params.id);
         if (req.body.deleteImages && req.body.deleteImages.length) {
             let deleteImages = req.body.deleteImages;
-            for (const public_id of deleteImages) {
-                await cloudinary.v2.uploader.destroy(public_id);
+            for (const filename of deleteImages) {
+                await cloudinary.uploader.destroy(filename);
                 for (const image of post.images) {
-                    if (image.public_id === public_id) {
+                    if (image.filename === filename) {
                         let index = post.images.indexOf(image);
                         post.images.splice(index, 1);
                     }
@@ -98,10 +91,9 @@ module.exports = {
         }
         if (req.files) {
             for(const file of req.files) {
-                let image = await cloudinary.v2.uploader.upload(file.path);
                 post.images.push({
-                    url: image.secure_url,
-                    public_id: image.public_id
+                    path: file.path,
+                    filename: file.filename
                 });
     
             }
@@ -132,7 +124,7 @@ module.exports = {
     async postDestroy(req, res, next) {
         let post = await Post.findById(req.params.id);
         for (const image of post.images) {
-            await cloudinary.v2.uploader.destroy(image.public_id);
+            await cloudinary.uploader.destroy(image.filename);
             
         }
         await post.remove()

@@ -1,10 +1,11 @@
 const Review = require('../models/review');
+const User = require('../models/user');
 module.exports = {
-    asyncErrorHandler: (fn) => 
-         (req, res, next) => {
-            Promise.resolve(fn(req, res, next))
-                    .catch(next);
-        },
+        asyncErrorHandler: (fn) => 
+                (req, res, next) => {
+                Promise.resolve(fn(req, res, next))
+                        .catch(next);
+                },
         isReviewAuthor: async (req, res, next) => {
                 let review = await Review.findById(req.params.review_id);
                 if (review.author.equals(req.user._id)) {
@@ -13,6 +14,15 @@ module.exports = {
 
                 req.session.error = 'Bye Bye';
                 return res.redirect('/');
+        },
+        CheckIfUserExists: async (req, res, next) => {
+                let userExists = await User.findOne({'email': req.body.email});
+                if(userExists) {
+                        req.session.error = 'A User with the given email is already registered';
+                        return res.redirect('back');
+                }
+                next();
+
         }
     
 }

@@ -74,10 +74,10 @@ passport.deserializeUser(User.deserializeUser());
 app.use(function(req, res, next) {
   // set default page title
   res.locals.title = 'Surf Shop';
-  req.user = {
-    '_id': '60838c171e900715648eb580',
-    'username': 'ian3'
-  }
+  // req.user = {
+  //   '_id': '60838c171e900715648eb580',
+  //   'username': 'ian3'
+  // }
   res.locals.currentUser = req.user;
   // set success flash message
   res.locals.success = req.session.success || '';
