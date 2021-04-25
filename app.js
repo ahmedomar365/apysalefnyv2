@@ -24,7 +24,7 @@ const reviewsRouter = require('./routes/reviews');
 const app = express();
 //connect to the database
 // mongoose.connect('mongodb+srv://<username>:<password>@cluster0.hufxf.mongodb.net/myFirstDatabase?retryWrites=true&w=majority');
-mongoose.connect(uri,  { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(uri,  { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true });
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', () => {

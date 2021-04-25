@@ -10,7 +10,7 @@ const {
 
 } = require('../controllers');
 
-const { asyncErrorHandler, CheckIfUserExists } = require('../middleware');
+const { asyncErrorHandler } = require('../middleware');
 
 /* GET home/landing page. */
 router.get('/', asyncErrorHandler(landingPage));
@@ -20,7 +20,7 @@ router.get('/register', getRegister);
 /* POST /register. */
 //this is for creating the user.
 
-router.post('/register', asyncErrorHandler(CheckIfUserExists), asyncErrorHandler(postRegister));
+router.post('/register', asyncErrorHandler(postRegister));
 
 /* get /login. */
 router.get('/login', getLogin);
