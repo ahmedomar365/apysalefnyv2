@@ -68,7 +68,7 @@ module.exports = {
 
     //Posts Edit    
 
-    async postEdit(req, res, next) {
+    postEdit(req, res, next) {
         
         res.render('posts/edit');
 
@@ -117,7 +117,7 @@ module.exports = {
         post.price = req.body.post.price;
 		post.properties.description = `<strong><a href="/posts/${post._id}">${post.title}</a></strong><p>${post.location}</p><p>${post.description.substring(0, 20)}...</p>`;
 
-        post.save();
+        await post.save();
         res.redirect(`/posts/${post.id}`);
 
     },
