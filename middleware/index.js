@@ -62,7 +62,10 @@ module.exports = {
 		} = req.body;
 
 		// check if new password values exist
-		if (newPassword && passwordConfirmation) {
+                if (newPassword && !passwordConfirmation) {
+                        req.session.error = 'missing password confirmation';
+                        return res.redirect('/profile');
+                }else if (newPassword && passwordConfirmation) {
 			// destructure user from res.locals
 			const { user } = res.locals;
 				// check if new passwords match
