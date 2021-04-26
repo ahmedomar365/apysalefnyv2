@@ -8,10 +8,17 @@ const {
   getLogout, 
   landingPage,
   getProfile,
+  updateProfile
 
 } = require('../controllers');
 
-const { asyncErrorHandler, isLoggedIn } = require('../middleware');
+const { 
+  asyncErrorHandler, 
+  isLoggedIn,
+  isValidPassword,
+  changePassword,
+
+} = require('../middleware');
 
 /* GET home/landing page. */
 router.get('/', asyncErrorHandler(landingPage));
@@ -40,10 +47,14 @@ router.get('/profile', isLoggedIn, asyncErrorHandler(getProfile));
 
 //so that you can update the user info which you got from the login
 //so the profile will get this data and then you will be able to update this information
-/* PUT /profile/:user_id */
-router.put('/profile/:user_id', (req, res, next) => {
-  res.send("PUT /profile/:user_id");
-});
+/* PUT /profile*/
+router.put('/profile',
+ isLoggedIn,
+  asyncErrorHandler(isValidPassword),
+  asyncErrorHandler(changePassword),
+  asyncErrorHandler(updateProfile)
+
+  );
 
 /* GET /forgot */
 router.get('/forgot', (req, res, next) => {
