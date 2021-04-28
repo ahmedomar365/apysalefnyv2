@@ -22,7 +22,7 @@ isReviewAuthor: async (req, res, next) => {
         }
 
         req.session.error = 'Bye Bye';
-        return res.redirect('/');
+        return res.send('you are not the review author');
 },
 // CheckIfUserExists: async (req, res, next) => {
 //         let userExists = await User.findOne({'email': req.body.email});
@@ -34,10 +34,15 @@ isReviewAuthor: async (req, res, next) => {
 
 // }
 isLoggedIn: (req, res, next) => {
+		console.log('hello');
+		// console.log(req);
+		// console.log(res)
+
+
         if(req.isAuthenticated()) return next();
         req.session.error = 'You need to be logged in to do that!';
         req.session.redirectTo = req.originalUrl;
-        res.redirect('/login');
+        res.send(req.session.error);
 },
 isAuthor: async (req, res, next) => {
         const post = await Post.findById(req.params.id);
@@ -46,7 +51,7 @@ isAuthor: async (req, res, next) => {
                 return next();
         }
         req.session.error = 'Access denied!';
-        res.redirect('back');
+        res.send(req.session.error);
 },
 isValidPassword: async (req, res, next) => {
         const { user } = await User.authenticate()(req.user.username, req.body.currentPassword)
@@ -60,7 +65,7 @@ isValidPassword: async (req, res, next) => {
                 // flash an error
                 req.session.error = 'Incorrect Current Password!';
                 // short circuit the route middleware and redirect to /profile
-                return res.redirect('/profile');
+                return res.send(req.session.error);
         }
 },
 changePassword: async (req, res, next) => {
@@ -75,7 +80,7 @@ changePassword: async (req, res, next) => {
                 middleware.deleteProfileImage(req);
 
                 req.session.error = 'missing password confirmation';
-                return res.redirect('/profile');
+                return res.send(req.session.error);
         }else if (newPassword && passwordConfirmation) {
                 // destructure user from res.locals
                 const { user } = res.locals;
@@ -91,7 +96,7 @@ changePassword: async (req, res, next) => {
                                 // flash error
                                 req.session.error = 'New passwords must match!';
                                 // short circuit the route middleware and redirect to /profile
-                                return res.redirect('/profile');
+                                return res.send(req.session.error);
                         }
         } else {
                 // go to next middleware

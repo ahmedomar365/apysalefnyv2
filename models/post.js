@@ -3,11 +3,22 @@ const Schema = mongoose.Schema;
 const Review = require('./review');
 const mongoosePaginate = require('mongoose-paginate');
 const PostSchema = new Schema({
-    title: String,
-    price: String,//Post profile image
+    item_name: String,
     description: String,
+    category: String,
+
+    price: {
+        per_day: String,
+        per_week: String,
+        per_month: String,
+    },
+    current_number: String,
+
     images: [ { path: String, filename: String } ],
     location: String,
+    prefered_way_to_contact: String,
+    additonal: String,
+
     geometry: {
         type: {
             type: String,

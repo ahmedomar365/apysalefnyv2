@@ -12,11 +12,11 @@ module.exports = {
     // GET / 
     async landingPage(req, res, next) {
         const posts = await Post.find({});
-        res.render('index', { posts, mapBoxToken, title: 'Surf Shop - Home'});
+        res.status(200).send({ posts, mapBoxToken, title: 'Salefny - Home'});
     },
     // GET /register
     getRegister(req, res, next) {
-        res.render('register', { title: 'Register', username: '', email: '' });
+        res.send({ title: 'Register', username: '', email: '' });
     },
     //POST /register
     async postRegister(req, res, next) {
@@ -34,9 +34,12 @@ module.exports = {
             }
             const user = await User.register(new User(req.body), req.body.password);
             req.login(user, function(err) {
-                if (err) return next(err);
-                req.session.success = `Welcome to Surf Shop, ${user.username}!`;
-                res.redirect('/');
+                if (err) {
+                    res.send(err);
+                    return next(err);
+                }
+                req.session.success = `Welcome, ${user.username}!`;
+                res.send(req.session.success);
     
             });
 
@@ -47,43 +50,59 @@ module.exports = {
             if (error.includes('duplicate') && error.includes('index: email_1 dup key')) {
                 error = 'A user with the given email is already registered';
             }
-            res.render('register', { title: 'Register', username, email, error });
+            res.send({ title: 'Register', username, email, error });
         }
 
         
     },
     // GET /login
     getLogin(req, res, next) {
-        if (req.isAuthenticated()) return res.redirect('/');
+        if (req.isAuthenticated()) return res.send('user is already logged in');
         if (req.query.returnTo) req.session.redirectTo = req.headers.referer;
-        res.render('login', { title: 'login' });
+        res.status(200).send({ title: 'login' });
     },
     //POST /login
     async postLogin(req, res, next) {
+        
         console.log('helo');
-        console.log(req.body);
+
         const { username, password } = req.body;
         const { user, error } = await User.authenticate()(username, password);
-        if (!user && error) return next(error);
+        if (!user && error) {
+            res.send(error);
+            return next(error);
+
+        }
         req.login(user, function(err) {
             if (err) return next(err);
             req.session.success = `Welcome back, ${username}!`;
             const redirectUrl = req.session.redirectTo || '/';
             delete req.session.redirectTo;
-            res.redirect(redirectUrl);
+            // let userToClient = req.user.image;
+            // var copy = Object.assign({}, req.user);
+            var copy = req.user
+            // delete userTOClient;
+            // delete copy.salt;
+            delete copy._doc.salt;
+            delete copy._doc.hash;
+            // console.log(copy);
+            res.send({message: req.session.success, redirectUrl, session: req.sessionID, user: copy });
+            // console.log(req.sessionID);
+            console.log(req.sessionStore.sessions);
+            // console.log(req.user);
         });
     },
 
     // GET /logout
     getLogout(req, res, next) {
         req.logout();
-        res.redirect('/');
+        res.send('logged out');
           
     },
 
     async getProfile(req, res, next) {
         const posts = await Post.find().where('author').equals(req.user._id).limit(10).exec();
-        res.render('profile', { posts });
+        res.send({ posts });
     },
     async updateProfile(req, res, next) {
 		// destructure username and email from req.body
@@ -109,10 +128,10 @@ module.exports = {
 		await login(user);
 		// redirect to /profile with a success flash message
 		req.session.success = 'Profile successfully updated!';
-		res.redirect('/profile');
+		res.send(req.session.success);
 	},
     getForgotPw(req, res, next) {
-        res.render('users/forgot');
+        res.send('users/forgot');
     },
     async putForgotPw(req, res, next) {
         const token = await crypto.randomBytes(20).toString('hex');
@@ -120,7 +139,7 @@ module.exports = {
         const user = await User.findOne({ email: req.body.email })
         if (!user) {
             req.session.error = 'No account with that email address exists.';
-          return res.redirect('/forgot-password');
+          return res.send(req.session.error);
         }
     
         user.resetPasswordToken = token;
@@ -142,14 +161,16 @@ module.exports = {
       await sgMail.send(msg);
     
       req.session.success = `An e-mail has been sent to ${user.email} with further instructions.`;
-      res.redirect('/forgot-password');
+      res.send(req.session.success);
     },
     async getReset(req, res, next) {
       const { token } = req.params;
         const user = await User.findOne({ resetPasswordToken: token, resetPasswordExpires: { $gt: Date.now() } })
       if (!user) {
         req.session.error = 'Password reset token is invalid or has expired.';
-        return res.redirect('/forgot-password');
+        return res.status(400).send({
+            message: 'Password reset token is invalid or has expired.'
+         });
       }
       res.render('users/reset', { token });
     },
@@ -159,7 +180,9 @@ module.exports = {
         
         if (!user) {
          req.session.error = 'Password reset token is invalid or has expired.';
-         return res.redirect(`/reset/${ token }`);
+         return res.status(400).send({
+            message: 'Password reset token is invalid or has expired.'
+         });
         }
     
         if(req.body.password === req.body.confirm) {
@@ -171,7 +194,10 @@ module.exports = {
             await login(user);
         } else {
             req.session.error = 'Passwords do not match.';
-            return res.redirect(`/reset/${ token }`);
+            // return res.redirect(`/reset/${ token }`);
+            return res.status(400).send({
+                message: 'Password reset token is invalid or has expired.'
+             });
         }
     
       const msg = {
@@ -186,6 +212,6 @@ module.exports = {
       await sgMail.send(msg);
     
       req.session.success = 'Password successfully updated!';
-      res.redirect('/');
+      res.send(req.session.success);
     }
 }

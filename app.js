@@ -17,14 +17,21 @@ const cors = require("cors");
 // const seedPost = require('./seeds');
 // seedPost();
 // const MongoClient = require('mongodb').MongoClient;
-const uri = "mongodb+srv://surf:surf@cluster0.hufxf.mongodb.net/surf-shop?retryWrites=true&w=majority";
+const uri = "mongodb+srv://surf:surf@cluster0.hufxf.mongodb.net/salefny-v2?retryWrites=true&w=majority";
 // const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 // require routes
 const indexRouter = require('./routes/index');
 const postsRouter = require('./routes/posts');
 const reviewsRouter = require('./routes/reviews');
 const app = express();
-app.use(cors());
+// app.use(function(req, res, next) {
+//   res.header("Access-Control-Allow-Origin", "http://localhost:8080/");
+//   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+//   res.header('Access-Control-Allow-Credentials', true);
+//   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+//   next();
+// });
+app.use(cors({credentials: true, origin: 'http://localhost:8080'}));
 
 //connect to the database
 // mongoose.connect('mongodb+srv://<username>:<password>@cluster0.hufxf.mongodb.net/myFirstDatabase?retryWrites=true&w=majority');
@@ -61,7 +68,7 @@ app.use(methodOverride('_method'));
 //configure Passport and Sessions
 
 app.use(session({
-  secret: 'hang ten dude!',
+  secret: 'hang te!@#!#dawdn dudwadadadawdadde!',
   resave: false,
   saveUninitialized: true,
 
@@ -77,12 +84,12 @@ passport.deserializeUser(User.deserializeUser());
 // set local variables middleware
 app.use(function(req, res, next) {
   // set default page title
-  res.locals.title = 'Surf Shop';
+  res.locals.title = 'salefny Shop';
   // req.user = {
   //   '_id': '60838c171e900715648eb580',
   //   'username': 'ian3'
   // }
-  res.locals.currentUser = req.user;
+  // res.locals.currentUser = req.user;
   // set success flash message
   res.locals.success = req.session.success || '';
   delete req.session.success;

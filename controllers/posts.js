@@ -19,18 +19,20 @@ module.exports = {
         if (!posts.docs.length && res.locals.query) {
             		res.locals.error = 'No results match that query.';
             	}
-        res.render('posts/index', { posts, mapBoxToken: mapBoxToken ,title: 'Posts Index' });
+        res.send({ posts, mapBoxToken: mapBoxToken ,title: 'Posts Index' });
     },
 
     //creating a new post
     postNew(req, res, next) {
         
-        res.render('posts/new');
+        res.send('posts/new');
     },
 
     //Posts Create
     async postCreate(req, res, next) {
         req.body.post.images = [];
+        req.body.post.price = {};
+
         for(const file of req.files) {
             req.body.post.images.push({
                 path: file.path,
@@ -47,12 +49,18 @@ module.exports = {
         req.body.post.author = req.user._id;
         //use req.body to create a new Post
         // let post = await Post.create(req.body.post)
+        price = {
+            per_day: req.body.post.per_day,
+            per_week: req.body.post.per_week,
+            per_month: req.body.post.per_month,
+        };
+        req.body.post.price = price
+
         let post = new Post(req.body.post);
-		post.properties.description = `<strong><a href="/posts/${post._id}">${post.title}</a></strong><p>${post.location}</p><p>${post.description.substring(0, 20)}...</p>`;
+		// post.properties.description = `<strong><a href="/posts/${post._id}">${post.title}</a></strong><p>${post.location}</p><p>${post.description.substring(0, 20)}...</p>`;
 		await post.save();
 
-        req.session.success = 'Post created successfully!';
-        res.redirect(`/posts/${post.id}`);
+        res.send(post);
 
     },
 
@@ -68,7 +76,7 @@ module.exports = {
         });
         	// const floorRating = post.calculateAvgRating();
 	        const floorRating = post.avgRating;
-        res.render('posts/show', { post, floorRating });
+        res.send({ post, floorRating });
 
     },
 
@@ -76,7 +84,7 @@ module.exports = {
 
     postEdit(req, res, next) {
         
-        res.render('posts/edit');
+        res.send('posts/edit');
 
     },
 
@@ -124,7 +132,7 @@ module.exports = {
 		post.properties.description = `<strong><a href="/posts/${post._id}">${post.title}</a></strong><p>${post.location}</p><p>${post.description.substring(0, 20)}...</p>`;
 
         await post.save();
-        res.redirect(`/posts/${post.id}`);
+        res.send(`/posts/${post.id}`);
 
     },
     
@@ -136,6 +144,6 @@ module.exports = {
         }
         await post.remove()
         req.session.success = 'Post deleted successfully!';
-        res.redirect('/posts');
+        res.send(req.session.success);
     }
 }
