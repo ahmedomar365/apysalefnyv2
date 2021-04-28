@@ -7,6 +7,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const passport = require('passport');
+const facebookStrategy = require('passport-facebook').Strategy
 const User = require('./models/user');
 const session = require('express-session');
 const logger = require('morgan');
@@ -14,6 +15,14 @@ const mongoose = require('mongoose');
 const methodOverride = require('method-override');
 const cors = require("cors");
 const MongoStore = require('connect-mongo');
+
+// const { 
+//   asyncErrorHandler, 
+//   isLoggedIn,
+//   isValidPassword,
+//   changePassword,
+
+// } = require('../middleware');
 
 // const seedPost = require('./seeds');
 // seedPost();
@@ -24,6 +33,7 @@ const uri = "mongodb+srv://surf:surf@cluster0.hufxf.mongodb.net/salefny-v2?retry
 const indexRouter = require('./routes/index');
 const postsRouter = require('./routes/posts');
 const reviewsRouter = require('./routes/reviews');
+const user = require('./models/user');
 const app = express();
 // app.use(function(req, res, next) {
 //   res.header("Access-Control-Allow-Origin", "http://localhost:8080/");
@@ -88,12 +98,100 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-passport.use(User.createStrategy());
+// passport.use(User.createStrategy());
+// passport.serializeUser(User.serializeUser());
+// passport.deserializeUser(User.deserializeUser());
+//facebook strategy
+passport.use(new facebookStrategy({
 
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
+  // pull in our app id and secret from our auth.js file
+  clientID        : "488755738982896",
+  clientSecret    : "5b8631b38223d705902e51629fde85fd",
+  callbackURL     : "http://localhost:3000/facebook/callback",
+  profileFields   : ['id','displayName','name','picture.type(large)','email']
+
+},// facebook will send back the token and profile
+async function(token, refreshToken, profile, done) {
+  let user = await User.findOne({'uid': profile.id});
+  //if there is an error stop everything and return that error
+  // if (err) return done(err);
+  // if user if found log in them
+  if (user) {
+    console.log("user found");
+    console.log("user");
+    return done(null, user); // user found, return that user
+  }else {
+    // if there is no user found with that facebook id, create them
+    let newUser = new User();
+    // set all of the facebook information in our user model
+    newUser.uid    = profile.id; // set the users facebook id                   
+    newUser.token = token; // we will save the token that facebook provides to the user                    
+    newUser.name  = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
+    newUser.email = profile.emails[0].value; // facebook can return multiple emails so we'll take the first
+    newUser.gender = profile.gender;
+    newUser.pic = profile.photos[0].value;
+    newUser.national_id = 213213222222222123;
+    // save our user to the database
+    await newUser.save();
+    return done(null, newUser);
+  }
+
+  // console.log(profile)
+  // return done(null,profile)
+}));
+
+passport.serializeUser((user, done) => {
+
+  return done(null, user._id);
+
+});
+
+passport.deserializeUser((id, done) => {
+
+  User.findById(id, (err, user) => {
+      if (!err) {
+          return done(null, user);
+      } else {
+          return done(err, null);
+      }
+  });
+
+});
+// route middleware to make sure
+function isLoggedIn(req, res, next) {
+
+	// if user is authenticated in the session, carry on
+	if (req.isAuthenticated())
+		return next();
+
+	// if they aren't redirect them to the home page
+	res.redirect('/');
+}
+app.get('/logout', function(req, res) {
+  req.logout();
+  res.redirect('/');
+});
+app.get('/profile', isLoggedIn,(req,res) => {
+  console.log('hellooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo');
+  console.log(req.sessionID);
+  console.log(req.user);
+  res.render("profile", {user: req.user});
+})
+app.get('/auth/facebook', passport.authenticate('facebook', { scope : 'email,user_photos' }));
+app.get('/facebook/callback',
+		passport.authenticate('facebook', {
+			successRedirect : '/profile',
+			failureRedirect : '/'
+		}));
+app.get('/',(req,res) => {
+  res.render("index")
+})
+/////////////////////////////////////////////////////////
+
 // set local variables middleware
 app.use(function(req, res, next) {
+  console.log(user)
+
   // set default page title
   res.locals.title = 'salefny Shop';
   // req.user = {

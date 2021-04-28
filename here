@@ -1,0 +1,3 @@
+		passport.authenticate('facebook'), (req, res) => {
+      res.send('you are authenticated from facbeook callback');
+    });
