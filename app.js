@@ -14,7 +14,6 @@ const logger = require('morgan');
 const mongoose = require('mongoose');
 const methodOverride = require('method-override');
 const cors = require("cors");
-const MongoStore = require('connect-mongo');
 
 
 
@@ -46,12 +45,6 @@ db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', () => {
   console.log('we are connected!');
 }); 
-
-// const sessionStore = new MongoStore({
-//   mongooseConnection: db,
-//   collection: 'sessions',
-// });
-
 // client.connect(err => {
 //   const collection = client.db("surf-shop").collection("user");
 //   // perform actions on the collection object
@@ -82,10 +75,6 @@ app.use(session({
   secret: 'hang te!@#!#dawdn dudwadadadawdadde!',
   resave: false,
   saveUninitialized: true,
-//   store: MongoStore.create({
-//     mongoUrl: uri,
-//     touchAfter: 24 * 3600, // time period in seconds
-// }),
 
 }));
 
