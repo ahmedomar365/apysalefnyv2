@@ -7,7 +7,9 @@ const UserShema = new Schema({
     image: {
         path: { type: String, default: '/images/default-profile.jpg' },
         filename: String
-    }
+    },
+    resetPasswordToken: String,
+	resetPasswordExpires: Date
 
 });
 

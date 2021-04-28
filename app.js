@@ -12,6 +12,8 @@ const session = require('express-session');
 const logger = require('morgan');
 const mongoose = require('mongoose');
 const methodOverride = require('method-override');
+const cors = require("cors");
+
 // const seedPost = require('./seeds');
 // seedPost();
 // const MongoClient = require('mongodb').MongoClient;
@@ -22,6 +24,8 @@ const indexRouter = require('./routes/index');
 const postsRouter = require('./routes/posts');
 const reviewsRouter = require('./routes/reviews');
 const app = express();
+app.use(cors());
+
 //connect to the database
 // mongoose.connect('mongodb+srv://<username>:<password>@cluster0.hufxf.mongodb.net/myFirstDatabase?retryWrites=true&w=majority');
 mongoose.connect(uri,  { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true });
