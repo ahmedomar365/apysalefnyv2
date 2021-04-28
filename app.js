@@ -16,13 +16,7 @@ const methodOverride = require('method-override');
 const cors = require("cors");
 const MongoStore = require('connect-mongo');
 
-// const { 
-//   asyncErrorHandler, 
-//   isLoggedIn,
-//   isValidPassword,
-//   changePassword,
 
-// } = require('../middleware');
 
 // const seedPost = require('./seeds');
 // seedPost();
@@ -114,7 +108,7 @@ passport.use(new facebookStrategy({
 async function(token, refreshToken, profile, done) {
   let user = await User.findOne({'uid': profile.id});
   //if there is an error stop everything and return that error
-  // if (err) return done(err);
+  if (err) return done(err);
   // if user if found log in them
   if (user) {
     console.log("user found");
@@ -130,7 +124,6 @@ async function(token, refreshToken, profile, done) {
     newUser.email = profile.emails[0].value; // facebook can return multiple emails so we'll take the first
     newUser.gender = profile.gender;
     newUser.pic = profile.photos[0].value;
-    newUser.national_id = 213213222222222123;
     // save our user to the database
     await newUser.save();
     return done(null, newUser);
@@ -157,25 +150,10 @@ passport.deserializeUser((id, done) => {
   });
 
 });
-// route middleware to make sure
-function isLoggedIn(req, res, next) {
-
-	// if user is authenticated in the session, carry on
-	if (req.isAuthenticated())
-		return next();
-
-	// if they aren't redirect them to the home page
-	res.redirect('/');
-}
-app.get('/logout', function(req, res) {
-  req.logout();
-  res.redirect('/');
-});
 app.get('/profile', isLoggedIn,(req,res) => {
   console.log('hellooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo');
   console.log(req.sessionID);
-  console.log(req.user);
-  res.render("profile", {user: req.user});
+  res.render("profile");
 })
 app.get('/auth/facebook', passport.authenticate('facebook', { scope : 'email,user_photos' }));
 app.get('/facebook/callback',

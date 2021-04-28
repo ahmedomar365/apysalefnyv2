@@ -213,5 +213,22 @@ module.exports = {
     
       req.session.success = 'Password successfully updated!';
       res.send(req.session.success);
-    }
+    },
+    async facebookLogin(req, res, next) {
+        passport.authenticate('facebook', { scope : 'email,user_photos' }, function(err, user, info) {
+          if (err) { res.send(err); return next(err); }
+          if (!user) { return res.send('plesae login first'); }
+          req.logIn(user, function(err) {
+            if (err) { res.send(err); return next(err); }
+            return res.send('/users/' + user.email);
+          });
+        })(req, res, next);
+      },
+      async facebookCallBack(req, res, next) {
+        passport.authenticate('facebook', function(err, user, info) {
+          if (err) { res.send(err); return next(err); }
+          res.send('callback called');
+        })(req, res, next);
+      }
+      
 }

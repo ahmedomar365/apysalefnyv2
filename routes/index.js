@@ -15,7 +15,9 @@ const {
   getForgotPw,
   putForgotPw,
   getReset,
-  putReset
+  putReset,
+  facebookLogin,
+  facebookCallBack
 
 } = require('../controllers');
 
@@ -28,7 +30,7 @@ const {
 } = require('../middleware');
 
 /* GET home/landing page. */
-router.get('/', asyncErrorHandler(landingPage));
+// router.get('/', asyncErrorHandler(landingPage));
 
 /* GET /register. */
 router.get('/register', getRegister);
@@ -74,4 +76,12 @@ router.put('/forgot-password', asyncErrorHandler(putForgotPw));
 router.get('/reset/:token', asyncErrorHandler(getReset));
 /* PUT /reset/:token */
 router.put('/reset/:token', asyncErrorHandler(putReset));
+
+//facebook login
+router.get('/facebook/login', facebookLogin);
+
+router.get('/facebook/callback', facebookCallBack);
+router.get('/',(req,res) => {
+  res.render("index")
+})
 module.exports = router;
