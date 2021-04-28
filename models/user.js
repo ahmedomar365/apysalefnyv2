@@ -4,8 +4,10 @@ const Schema = mongoose.Schema;
 
 const UserShema = new Schema({
     email: { type: String, unique: true, required: true },
-    image: String,//user profile image
-
+    image: {
+        path: { type: String, default: '/images/default-profile.jpg' },
+        filename: String
+    }
 
 });
 

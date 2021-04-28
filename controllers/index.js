@@ -3,6 +3,8 @@ const Post = require('../models/post');
 const passport = require('passport');
 const mapBoxToken = process.env.MAPBOX_TOKEN;
 const util = require('util');
+const { cloudinary } = require('../cloudinary');
+const { deleteProfileImage } = require('../middleware');
 
 module.exports = {
     // GET / 
@@ -18,6 +20,16 @@ module.exports = {
     async postRegister(req, res, next) {
         console.log('registering user');
         try {
+            if (req.file) {
+                const { path, filename } = req.file;
+                // console.log(path);
+                // console.log(req.file);
+
+                req.body.image = {
+                    path: path, filename: filename
+                };
+                // console.log(req.body.image);
+            }
             const user = await User.register(new User(req.body), req.body.password);
             req.login(user, function(err) {
                 if (err) return next(err);
@@ -27,6 +39,7 @@ module.exports = {
             });
 
         }catch(err) {
+            deleteProfileImage(req);
             const { username, email } = req.body;
             let error = err.message;
             if (error.includes('duplicate') && error.includes('index: email_1 dup key')) {
@@ -45,6 +58,8 @@ module.exports = {
     },
     //POST /login
     async postLogin(req, res, next) {
+        console.log('helo');
+        console.log(req.body);
         const { username, password } = req.body;
         const { user, error } = await User.authenticate()(username, password);
         if (!user && error) return next(error);
@@ -79,6 +94,11 @@ module.exports = {
 		// check if username or email need to be updated
 		if (username) user.username = username;
 		if (email) user.email = email;
+        if (req.file) {
+            if (user.image.filename) await cloudinary.uploader.destroy(user.image.filename);
+            const { path, filename } = req.file;
+            user.image = { path, filename };
+        }
 		// save the updated user to the database
 		await user.save();
 		// promsify req.login
